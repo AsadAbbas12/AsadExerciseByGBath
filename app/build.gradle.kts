@@ -2,8 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias (libs.plugins.hilt.android)
-    alias (libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
+    alias (libs.plugins.kapt)
 }
 
 android {
@@ -43,8 +43,6 @@ android {
 
 dependencies {
 
-
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -56,15 +54,25 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler) // ✅ Inject Hilt compiler
+    kapt(libs.hilt.compiler) // ✅ Inject Hilt compiler
     implementation(libs.hilt.navigation.compose) // Hilt integration with Jetpack Compose
-
-
-    testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+   implementation (libs.androidx.foundation)
+   implementation (libs.ui)
+   implementation (libs.androidx.runtime.livedata)
+   implementation (libs.androidx.lifecycle.viewmodel.compose)
+   implementation (libs.androidx.media)
+   implementation (libs.exoplayer) // using deprecated api because exo three has some bugs yet.
+    implementation(libs.coil.compose) // Use the latest version
+
+//    implementation(libs.androidx.media3.exoplayer)
+//    implementation (libs.androidx.media3.ui)
+
+
 }

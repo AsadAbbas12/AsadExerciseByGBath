@@ -100,12 +100,7 @@ val LocalNavigationActions = compositionLocalOf<NavigationActions<*>> {
     error("Navigation actions are not provided")
 }
 
-/**
- * A generic function to safely cast `LocalNavigationActions.current` to a specific `NavigationActions` type.
- *
- * @param T The type of the destinations, constrained to be an enum. This ensures only enums can be used as navigation destinations.
- * @return A `NavigationActions<T>` instance if the cast is successful, or `null` otherwise.
- */
+
 @Composable
 inline fun <reified ASAD : Enum<ASAD>> NavigateToScreen(): NavigationActions<ASAD>? {
     // Attempt to cast the current navigation actions to the specified generic type.

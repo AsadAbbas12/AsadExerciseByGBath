@@ -1,4 +1,4 @@
-package com.task.asadexercise
+package com.task.asadexercise.base
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -14,6 +14,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.task.asadexercise.AppNavigationGraph
+import com.task.asadexercise.NavigationActions
+import com.task.asadexercise.R
 import com.task.asadexercise.ui.theme.AsadExerciseTheme
 
 abstract class NavigationGraph<D : Enum<D>> : ComponentActivity() {
@@ -21,6 +24,7 @@ abstract class NavigationGraph<D : Enum<D>> : ComponentActivity() {
     abstract val destinations: Map<D, @Composable () -> Unit>
     abstract val startDestination: D
     abstract val sharedViewModel: ViewModel
+
 
     @Composable
     open fun Screens(
