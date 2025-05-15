@@ -19,6 +19,8 @@ import com.task.asadexercise.screens.MainScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
+import kotlin.random.Random
 
 // provide the number of screens to be displayed in the navigation graph.
 enum class Destinations { SPLASH, MAIN, DETAIL }
@@ -47,9 +49,32 @@ class MainActivity : NavigationGraph<Destinations>() {
         notificationHelper = CarProgressNotificationHelper(this)
 
         lifecycleScope.launch {
+            // Generate a stable notification ID based on tag or random
+            val notificationId = "ts"?.hashCode()?.absoluteValue ?: Random.nextInt().absoluteValue
+
             for (progress in 1..10) {
-                notificationHelper.showProgressNotification(progress)
-                delay(1000) // 1 second delay
+                notificationHelper.showProgressNotification(progress, notificationId  = notificationId)
+                delay(2000) // 1 second delay
+            }
+        }
+
+        lifecycleScope.launch {
+            // Generate a stable notification ID based on tag or random
+            val notificationId = "tss"?.hashCode()?.absoluteValue ?: Random.nextInt().absoluteValue
+
+            for (progress in 1..10) {
+                notificationHelper.showProgressNotification(progress, notificationId  = notificationId)
+                delay(4000) // 1 second delay
+            }
+        }
+
+        lifecycleScope.launch {
+            // Generate a stable notification ID based on tag or random
+            val notificationId = "tsss"?.hashCode()?.absoluteValue ?: Random.nextInt().absoluteValue
+
+            for (progress in 1..10) {
+                notificationHelper.showProgressNotification(progress, notificationId  = notificationId)
+                delay(6000) // 1 second delay
             }
         }
     }

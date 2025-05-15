@@ -21,19 +21,22 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.task.asadexercise.R
 import com.task.asadexercise.ui.theme.MainActivity
+import kotlin.random.Random
 
 class CarProgressNotificationHelper(private val context: Context) {
 
     companion object {
         const val CHANNEL_ID = "CAR_PROGRESS_CHANNEL"
-        const val NOTIFICATION_ID = 1002
+        private const val MAX_ACTIVE_NOTIFICATIONS = 2
+        private val activeNotificationIds = mutableListOf<Int>()
         private const val PROGRESS_BAR_WIDTH = 430
         private const val PROGRESS_BAR_HEIGHT = 30
         private const val CAR_ICON_SIZE = 30
         const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1001
     }
 
-    fun showProgressNotification(status: Int, totalStages: Int = 10) {
+    fun showProgressNotification(status: Int, totalStages: Int = 10, notificationId: Int) {
+
         // Check notification permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
@@ -41,7 +44,6 @@ class CarProgressNotificationHelper(private val context: Context) {
                     Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                // Request permission if in an Activity
                 if (context is android.app.Activity) {
                     ActivityCompat.requestPermissions(
                         context,
@@ -53,57 +55,81 @@ class CarProgressNotificationHelper(private val context: Context) {
             }
         }
 
+        // If we have max notifications and this is a new one, remove the oldest
+        if (activeNotificationIds.size >= MAX_ACTIVE_NOTIFICATIONS &&
+            !activeNotificationIds.contains(notificationId)) {
+            val oldestId = activeNotificationIds.first()
+            NotificationManagerCompat.from(context).cancel(oldestId)
+            activeNotificationIds.remove(oldestId)
+        }
+
+        // Add this notification to active list if not already there
+        if (!activeNotificationIds.contains(notificationId)) {
+            activeNotificationIds.add(notificationId)
+        }
 
         // Determine status text based on progress
         val (statusText, statusColor) = when {
-            status == 0 -> Pair("Preparing", "#FFA500") // Orange
-            status < totalStages / 3 -> Pair("Preparing", "#FFA500") // Orange
-            status < totalStages * 2/3 -> Pair("On the Way", "#4CAF50") // Green
-            status < totalStages -> Pair("Arriving Soon", "#4CAF50") // Green
-            else -> Pair("Arrived", "#4CAF50") // Green
+            status == 0 -> Pair("Preparing", "#FFA500")
+            status < totalStages / 3 -> Pair("On the Way", "#FFA500")
+            status < totalStages * 2 / 3 -> Pair("Approaching", "#4CAF50")
+            status < totalStages -> Pair("Arriving Soon", "#4CAF50")
+            else -> Pair("Arrived", "#4CAF50")
         }
 
         createNotificationChannel()
 
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra("notificationId", notificationId)
         }
         val pendingIntent = PendingIntent.getActivity(
-            context, 0, intent,
+            context, notificationId, intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         // Create progress bar with moving car
         val progressBitmap = createProgressBarWithCar(status, totalStages)
-        val collapsedView = RemoteViews(context.packageName, R.layout.custom_notification)
-        val expandedView = RemoteViews(context.packageName, R.layout.custom_notification_expand)
+        val collapsedView = RemoteViews(context.packageName, R.layout.custom_notification).apply {
+            setImageViewBitmap(R.id.imageViewProgress, progressBitmap)
+            setTextViewText(R.id.textSmartResponse, "Live Tracking: $statusText")
+            setTextColor(R.id.textSmartResponse, Color.parseColor(statusColor))
+        }
 
-// Set your dynamic content
-        collapsedView.setImageViewBitmap(R.id.imageViewProgress, progressBitmap)
-        collapsedView.setTextViewText(R.id.textSmartResponse, "Smart Response Track : " + statusText) // if needed
+        val expandedView = RemoteViews(context.packageName, R.layout.custom_notification_expand).apply {
+            setImageViewBitmap(R.id.imageViewProgress, progressBitmap)
+            setTextViewText(R.id.textSmartResponse, "Service Progress Details")
+            setTextColor(R.id.textSmartResponse, Color.parseColor(statusColor))
+        }
 
-        expandedView.setImageViewBitmap(R.id.imageViewProgress, progressBitmap)
-        expandedView.setTextViewText(R.id.textSmartResponse, "Expanded Smart Response") // if needed
-
-        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("Order Progress") // Optional, may be replaced by custom layout
-            .setContentText("Status: $status/$totalStages") // Optional
+        NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.mipmap.test)
+            .setContentTitle("Service Progress")
+            .setContentText(statusText)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .setOnlyAlertOnce(true)
-            .setCustomContentView(collapsedView)        // Collapsed layout
-            .setCustomBigContentView(expandedView)      // Expanded layout
+            .setCustomContentView(collapsedView)
+            .setCustomBigContentView(expandedView)
+            .setProgress(totalStages, status, false)
+            .also {
+                NotificationManagerCompat.from(context).notify(notificationId, it.build())
+            }
+    }
 
-        NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, builder.build())
+    fun cancelNotification(notificationId: Int) {
+        NotificationManagerCompat.from(context).cancel(notificationId)
+        activeNotificationIds.remove(notificationId)
+    }
 
-
+    fun cancelAllNotifications() {
+        NotificationManagerCompat.from(context).cancelAll()
+        activeNotificationIds.clear()
     }
 
     private fun createProgressBarWithCar(currentProgress: Int, totalProgress: Int): Bitmap {
-        val progressPercentage =
-            (currentProgress.toFloat() / totalProgress.toFloat()).coerceIn(0f, 1f)
+        val progressPercentage = (currentProgress.toFloat() / totalProgress.toFloat()).coerceIn(0f, 1f)
         val totalWidth = PROGRESS_BAR_WIDTH + CAR_ICON_SIZE
         val bitmap = Bitmap.createBitmap(
             totalWidth,
@@ -118,34 +144,21 @@ class CarProgressNotificationHelper(private val context: Context) {
 
         // Draw track background
         paint.color = Color.LTGRAY
-
-        val reducedHeight = PROGRESS_BAR_HEIGHT / 7f // Same reduction as before
+        val reducedHeight = PROGRESS_BAR_HEIGHT / 7f
 
         canvas.drawRoundRect(
-            RectF(
-                0f,
-                100 / 2f,
-                PROGRESS_BAR_WIDTH.toFloat(),
-                100 / 2f + reducedHeight
-            ),
+            RectF(0f, 100 / 2f, PROGRESS_BAR_WIDTH.toFloat(), 100 / 2f + reducedHeight),
             reducedHeight / 2f,
             reducedHeight / 2f,
             paint
         )
 
-
         // Draw progress
         paint.color = ContextCompat.getColor(context, R.color.teal_200)
-
         val progressWidth = PROGRESS_BAR_WIDTH * progressPercentage
 
         canvas.drawRoundRect(
-            RectF(
-                0f,
-                100 / 2f,
-                progressWidth,
-                (100 / 2f + reducedHeight)
-            ),
+            RectF(0f, 100 / 2f, progressWidth, (100 / 2f + reducedHeight)),
             reducedHeight / 2f,
             reducedHeight / 2f,
             paint
@@ -154,8 +167,6 @@ class CarProgressNotificationHelper(private val context: Context) {
         // Draw car at current progress position
         val carIcon = BitmapFactory.decodeResource(context.resources, R.drawable.cea)
         val scaledCar = Bitmap.createScaledBitmap(carIcon, 100, 100, true)
-
-        // Position car at progress point (centered vertically)
         val carX = progressWidth - (100 / 2f)
         val carY = 0f
 
@@ -182,4 +193,7 @@ class CarProgressNotificationHelper(private val context: Context) {
             notificationManager.createNotificationChannel(channel)
         }
     }
+
+    private val Int.absoluteValue: Int
+        get() = if (this < 0) -this else this
 }
