@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:gravity="top"
-    android:layout_height="55dp">
-
-    <ImageView
-        android:id="@+id/imageViewProgress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop" />
-
+    android:layout_height="100dp">
 
     <TextView
         android:id="@+id/textSmartResponse"
@@ -19,6 +9,34 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:text="Smart Response Tracking"
+        android:textColor="#CEC4C4" />
+
+    <TextView
+        android:id="@+id/text_place"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textSmartResponse"
+        android:text="No-Electricity - No Power"
+        android:textColor="#E0D6D6" />
+
+    <TextView
+        android:id="@+id/ttest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_place"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="-20dp"
+        android:text="Team Arrived"
         android:textColor="#1A1818"
-        android:padding="4dp" />
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/imageViewProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop" /> <!-- Replace with actual image resource -->
+
 </RelativeLayout>

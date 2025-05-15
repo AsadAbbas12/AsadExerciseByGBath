@@ -57,7 +57,8 @@ class CarProgressNotificationHelper(private val context: Context) {
 
         // If we have max notifications and this is a new one, remove the oldest
         if (activeNotificationIds.size >= MAX_ACTIVE_NOTIFICATIONS &&
-            !activeNotificationIds.contains(notificationId)) {
+            !activeNotificationIds.contains(notificationId)
+        ) {
             val oldestId = activeNotificationIds.first()
             NotificationManagerCompat.from(context).cancel(oldestId)
             activeNotificationIds.remove(oldestId)
@@ -74,7 +75,7 @@ class CarProgressNotificationHelper(private val context: Context) {
             status < totalStages / 3 -> Pair("On the Way", "#FFA500")
             status < totalStages * 2 / 3 -> Pair("Approaching", "#4CAF50")
             status < totalStages -> Pair("Arriving Soon", "#4CAF50")
-            else -> Pair("Arrived", "#4CAF50")
+            else -> Pair("Team Arrived", "#4CAF50")
         }
 
         createNotificationChannel()
@@ -96,11 +97,13 @@ class CarProgressNotificationHelper(private val context: Context) {
             setTextColor(R.id.textSmartResponse, Color.parseColor(statusColor))
         }
 
-        val expandedView = RemoteViews(context.packageName, R.layout.custom_notification_expand).apply {
-            setImageViewBitmap(R.id.imageViewProgress, progressBitmap)
-            setTextViewText(R.id.textSmartResponse, "Service Progress Details")
-            setTextColor(R.id.textSmartResponse, Color.parseColor(statusColor))
-        }
+        val expandedView =
+            RemoteViews(context.packageName, R.layout.custom_notification_expand).apply {
+                setImageViewBitmap(R.id.imageViewProgress, progressBitmap)
+                setTextViewText(R.id.textSmartResponse, "Smart Response")
+                setTextViewText(R.id.ttest, statusText)
+                setTextColor(R.id.ttest, Color.parseColor(statusColor))
+            }
 
         NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.mipmap.test)
@@ -129,7 +132,8 @@ class CarProgressNotificationHelper(private val context: Context) {
     }
 
     private fun createProgressBarWithCar(currentProgress: Int, totalProgress: Int): Bitmap {
-        val progressPercentage = (currentProgress.toFloat() / totalProgress.toFloat()).coerceIn(0f, 1f)
+        val progressPercentage =
+            (currentProgress.toFloat() / totalProgress.toFloat()).coerceIn(0f, 1f)
         val totalWidth = PROGRESS_BAR_WIDTH + CAR_ICON_SIZE
         val bitmap = Bitmap.createBitmap(
             totalWidth,
