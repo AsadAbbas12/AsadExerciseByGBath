@@ -57,26 +57,6 @@ class MainActivity : NavigationGraph<Destinations>() {
                 delay(2000) // 1 second delay
             }
         }
-
-        lifecycleScope.launch {
-            // Generate a stable notification ID based on tag or random
-            val notificationId = "tss"?.hashCode()?.absoluteValue ?: Random.nextInt().absoluteValue
-
-            for (progress in 1..10) {
-                notificationHelper.showProgressNotification(progress, notificationId  = notificationId)
-                delay(4000) // 1 second delay
-            }
-        }
-
-        lifecycleScope.launch {
-            // Generate a stable notification ID based on tag or random
-            val notificationId = "tsss"?.hashCode()?.absoluteValue ?: Random.nextInt().absoluteValue
-
-            for (progress in 1..10) {
-                notificationHelper.showProgressNotification(progress, notificationId  = notificationId)
-                delay(6000) // 1 second delay
-            }
-        }
     }
 
     private lateinit var notificationHelper: CarProgressNotificationHelper

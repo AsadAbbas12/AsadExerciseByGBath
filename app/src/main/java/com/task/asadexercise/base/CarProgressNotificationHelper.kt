@@ -142,6 +142,15 @@ class CarProgressNotificationHelper(private val context: Context) {
             style = Paint.Style.FILL
         }
 
+        // Determine progress color based on current progress
+        val progressColor = when {
+            currentProgress == 0 -> Color.parseColor("#FFA500") // Orange for Preparing
+            currentProgress < totalProgress / 3 -> Color.parseColor("#FFA500") // Orange for On the Way
+            currentProgress < totalProgress * 2 / 3 -> Color.parseColor("#4CAF50") // Green for Approaching
+            currentProgress < totalProgress -> Color.parseColor("#4CAF50") // Green for Arriving Soon
+            else -> Color.parseColor("#4CAF50") // Green for Arrived
+        }
+
         // Draw track background
         paint.color = Color.LTGRAY
         val reducedHeight = PROGRESS_BAR_HEIGHT / 7f
@@ -153,8 +162,8 @@ class CarProgressNotificationHelper(private val context: Context) {
             paint
         )
 
-        // Draw progress
-        paint.color = ContextCompat.getColor(context, R.color.teal_200)
+        // Draw progress with appropriate color
+        paint.color = progressColor
         val progressWidth = PROGRESS_BAR_WIDTH * progressPercentage
 
         canvas.drawRoundRect(
@@ -179,6 +188,7 @@ class CarProgressNotificationHelper(private val context: Context) {
 
         return bitmap
     }
+
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
