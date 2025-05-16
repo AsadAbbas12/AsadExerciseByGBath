@@ -275,7 +275,7 @@ class CarProgressNotificationHelper(private val context: Context) {
         val carIcon = BitmapFactory.decodeResource(context.resources, R.drawable.cea)
         val scaledCar = Bitmap.createScaledBitmap(carIcon, 100, 100, true)
         val carX = progressWidth - (100 / 2f)
-        val carY = 0f
+        val carY = 0.3f
 
         canvas.drawBitmap(
             scaledCar,
