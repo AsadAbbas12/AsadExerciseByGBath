@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -14,14 +15,15 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.os.Build
+import android.view.View
 import android.widget.RemoteViews
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.task.asadexercise.R
 import com.task.asadexercise.ui.theme.MainActivity
-import kotlin.random.Random
 
 class CarProgressNotificationHelper(private val context: Context) {
 
@@ -29,7 +31,7 @@ class CarProgressNotificationHelper(private val context: Context) {
         const val CHANNEL_ID = "CAR_PROGRESS_CHANNEL"
         private const val MAX_ACTIVE_NOTIFICATIONS = 2
         private val activeNotificationIds = mutableListOf<Int>()
-        private const val PROGRESS_BAR_WIDTH = 430
+        private const val PROGRESS_BAR_WIDTH = 440
         private const val PROGRESS_BAR_HEIGHT = 30
         private const val CAR_ICON_SIZE = 30
         const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1001
@@ -78,6 +80,20 @@ class CarProgressNotificationHelper(private val context: Context) {
             else -> Pair("Team Arrived", "#4CAF50")
         }
 
+
+        // Simulate or calculate estimated time remaining based on status
+        val estimatedMinutesLeft = when {
+            status == 0 -> 30
+            status < totalStages / 3 -> 20
+            status < totalStages * 2 / 3 -> 12
+            status < totalStages -> 5
+            else -> 0
+        }
+
+        // Set ETA if team has not arrived
+        val etaText =
+            if (status < totalStages) "ETA ${formatMinutes(estimatedMinutesLeft)}" else "Arrived"
+
         createNotificationChannel()
 
         val intent = Intent(context, MainActivity::class.java).apply {
@@ -91,34 +107,73 @@ class CarProgressNotificationHelper(private val context: Context) {
 
         // Create progress bar with moving car
         val progressBitmap = createProgressBarWithCar(status, totalStages)
-        val collapsedView = RemoteViews(context.packageName, R.layout.custom_notification).apply {
-            setImageViewBitmap(R.id.imageViewProgress, progressBitmap)
-            setTextViewText(R.id.textSmartResponse, "Live Tracking: $statusText")
-            setTextColor(R.id.textSmartResponse, Color.parseColor(statusColor))
-        }
+        val collapsedView =
+            RemoteViews(context.packageName, R.layout.custom_notification_collapse).apply {
+                setImageViewBitmap(R.id.imageViewProgress, progressBitmap)
+                setTextViewText(R.id.tvTitle, "Live Tracking: $statusText")
+                setTextColor(R.id.tvTitle, Color.parseColor(statusColor))
+            }
+
 
         val expandedView =
             RemoteViews(context.packageName, R.layout.custom_notification_expand).apply {
                 setImageViewBitmap(R.id.imageViewProgress, progressBitmap)
-                setTextViewText(R.id.textSmartResponse, "Smart Response")
-                setTextViewText(R.id.ttest, statusText)
-                setTextColor(R.id.ttest, Color.parseColor(statusColor))
+                setTextViewText(R.id.tvTitle, "Smart Response")
+                setTextViewText(R.id.tvStatus, statusText)
+                setTextColor(R.id.tvStatus, Color.parseColor(statusColor))
+                setTextViewText(R.id.tvEstimate, etaText)
+
+                if (status >= totalStages) {
+                    setViewVisibility(R.id.btnComplete, View.VISIBLE)
+                    setViewVisibility(R.id.btnCancel, View.GONE)
+
+                    val completeIntent =
+                        Intent(context, NotificationActionReceiver::class.java).apply {
+                            action = "ACTION_COMPLETE"
+                            putExtra("notificationId", notificationId)
+                        }
+                    val completePendingIntent = PendingIntent.getBroadcast(
+                        context,
+                        notificationId,
+                        completeIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                    setOnClickPendingIntent(R.id.btnComplete, completePendingIntent)
+                } else {
+                    setViewVisibility(R.id.btnComplete, View.GONE)
+                    setViewVisibility(R.id.btnCancel, View.VISIBLE)
+                    val completeIntent =
+                        Intent(context, NotificationActionReceiver::class.java).apply {
+                            action = "ACTION_COMPLETE"
+                            putExtra("notificationId", notificationId)
+                        }
+                    val completePendingIntent = PendingIntent.getBroadcast(
+                        context,
+                        notificationId,
+                        completeIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                    setOnClickPendingIntent(R.id.btnCancel, completePendingIntent)
+                }
+
             }
 
-        NotificationCompat.Builder(context, CHANNEL_ID)
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_dewa_pie_chart)
             .setContentTitle("Smart Response")
             .setContentText(statusText)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
+            .setStyle(null)
             .setOnlyAlertOnce(true)
             .setCustomContentView(collapsedView)
             .setCustomBigContentView(expandedView)
-            .setProgress(totalStages, status, false)
-            .also {
-                NotificationManagerCompat.from(context).notify(notificationId, it.build())
-            }
+        builder.setProgress(totalStages, status, false)
+
+        // Notify the system
+        NotificationManagerCompat.from(context).notify(notificationId, builder.build())
+
     }
 
     fun cancelNotification(notificationId: Int) {
@@ -210,4 +265,27 @@ class CarProgressNotificationHelper(private val context: Context) {
 
     private val Int.absoluteValue: Int
         get() = if (this < 0) -this else this
+
+    fun formatMinutes(minutes: Int): String {
+        val hours = minutes / 60
+        val mins = minutes % 60
+        return when {
+            hours > 0 && mins > 0 -> "${hours} hr ${mins} min"
+            hours > 0 -> "${hours} hr"
+            else -> "${mins} min"
+        }
+    }
+
+}
+
+
+class NotificationActionReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context?, intent: Intent?) {
+        val id = intent?.getIntExtra("notificationId", -1) ?: return
+        if (intent.action == "ACTION_COMPLETE") {
+            // Example: dismiss the notification or do something else
+            NotificationManagerCompat.from(context!!).cancel(id)
+            Toast.makeText(context, "Marked as Complete", Toast.LENGTH_SHORT).show()
+        }
+    }
 }

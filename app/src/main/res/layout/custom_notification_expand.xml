@@ -1,32 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="100dp">
+    android:layout_height="wrap_content"
+    android:padding="8dp">
 
     <TextView
-        android:id="@+id/textSmartResponse"
+        android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:text="Smart Response Tracking"
         android:textColor="#090909" />
 
     <TextView
-        android:id="@+id/text_place"
+        android:id="@+id/tvDewa"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/textSmartResponse"
+        android:layout_below="@id/tvTitle"
+        android:layout_marginTop="3dp"
         android:text="No-Electricity - No Power"
-        android:textColor="#141313" />
+        android:textColor="#141313"
+        android:textSize="18dp"
+        android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/ttest"
+        android:id="@+id/tvStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/text_place"
-        android:layout_marginTop="25dp"
-        android:layout_marginBottom="-25dp"
+        android:layout_below="@id/tvDewa"
+        android:layout_marginTop="35dp"
+        android:layout_marginBottom="-20dp"
         android:text="Team Arrived"
+        android:textColor="#1A1818"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvEstimate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/tvStatus"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
+        android:text="ETA 23 Min"
         android:textColor="#1A1818"
         android:textStyle="bold" />
 
@@ -34,8 +49,31 @@
         android:id="@+id/imageViewProgress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/tvStatus"
         android:adjustViewBounds="true"
-        android:scaleType="centerCrop" /> <!-- Replace with actual image resource -->
+        android:scaleType="centerCrop" />
 
+    <TextView
+        android:id="@+id/btnComplete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imageViewProgress"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="4dp"
+        android:text="Mark as complete"
+        android:textColor="@color/teal_200"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/btnCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imageViewProgress"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="4dp"
+        android:text="Cancel"
+        android:textColor="@color/teal_200"
+        android:visibility="visible" />
 </RelativeLayout>
