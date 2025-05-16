@@ -190,7 +190,8 @@ class CarProgressNotificationHelper(private val context: Context) {
     }
 
     private fun createProgressBarWithCar(currentProgress: Int, totalProgress: Int): Bitmap {
-        val progressPercentage = (currentProgress.toFloat() / totalProgress.toFloat()).coerceIn(0f, 1f)
+        val progressPercentage =
+            (currentProgress.toFloat() / totalProgress.toFloat()).coerceIn(0f, 1f)
         val totalWidth = PROGRESS_BAR_WIDTH + CAR_ICON_SIZE
         val bitmap = Bitmap.createBitmap(
             totalWidth,
@@ -205,11 +206,12 @@ class CarProgressNotificationHelper(private val context: Context) {
 
         // Define all segment colors
         val segmentColors = listOf(
-            Color.parseColor("#FFA500"),  // Preparing/On the Way (Orange)
-            Color.parseColor("#FFC107"),  // Approaching (Amber)
-            Color.parseColor("#8BC34A"),  // Arriving Soon (Light Green)
-            Color.parseColor("#4CAF50")   // Arrived (Green)
+            Color.parseColor("#FF8C00"),  // Brighter Orange
+            Color.parseColor("#FFD700"),  // Brighter Amber (Gold)
+            Color.parseColor("#AEEA00"),  // Brighter Light Green (Lime)
+            Color.parseColor("#00C853")   // Brighter Green (Emerald)
         )
+
 
         // Determine current segment
         val currentSegment = when {
@@ -281,6 +283,7 @@ class CarProgressNotificationHelper(private val context: Context) {
 
         return bitmap
     }
+
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Progress Tracking"
