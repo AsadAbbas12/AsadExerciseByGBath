@@ -106,8 +106,8 @@ class CarProgressNotificationHelper(private val context: Context) {
             }
 
         NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.mipmap.test)
-            .setContentTitle("Service Progress")
+            .setSmallIcon(R.drawable.ic_dewa_pie_chart)
+            .setContentTitle("Smart Response")
             .setContentText(statusText)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
