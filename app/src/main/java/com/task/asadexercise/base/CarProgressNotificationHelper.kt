@@ -24,7 +24,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.ColorUtils
 import com.task.asadexercise.R
 import com.task.asadexercise.ui.theme.MainActivity
 
@@ -74,22 +73,25 @@ class CarProgressNotificationHelper(private val context: Context) {
             activeNotificationIds.add(notificationId)
         }
 
-        // Determine status text based on progress
+        // Determine status text and color based on refined progress steps
         val (statusText, statusColor) = when {
             status == 0 -> Pair("Preparing", "#FFA500")
-            status < totalStages / 3 -> Pair("On the Way", "#FFA500")
-            status < totalStages * 2 / 3 -> Pair("Approaching", "#FFC107")
-            status < totalStages -> Pair("Arriving Soon", "#8BC34A")
-            else -> Pair("Team Arrived", "#4CAF50")
+            status < totalStages * 1 / 5 -> Pair("On the Way", "#FFA500")
+            status < totalStages * 2 / 5 -> Pair("Approaching", "#FFC107")
+            status < totalStages * 3 / 5 -> Pair("Arriving Soon", "#8BC34A")
+            status < totalStages -> Pair("Team Arrived", "#4CAF50")
+            else -> Pair("Done", "#4CAF50")
         }
 
 
-        // Simulate or calculate estimated time remaining based on status
+        // Estimated time remaining with 3-minute gaps
         val estimatedMinutesLeft = when {
             status == 0 -> 30
-            status < totalStages / 3 -> 20
-            status < totalStages * 2 / 3 -> 12
-            status < totalStages -> 5
+            status < totalStages / 5 -> 27
+            status < totalStages * 2 / 5 -> 24
+            status < totalStages * 3 / 5 -> 21
+            status < totalStages * 4 / 5 -> 18
+            status < totalStages -> 15
             else -> 0
         }
 
@@ -113,7 +115,7 @@ class CarProgressNotificationHelper(private val context: Context) {
         val collapsedView =
             RemoteViews(context.packageName, R.layout.custom_notification_collapse).apply {
                 setImageViewBitmap(R.id.imageViewProgress, progressBitmap)
-                setTextViewText(R.id.tvTitle, "Live Tracking: $statusText")
+                setTextViewText(R.id.tvTitle, "Smart Response - $statusText")
                 setTextColor(R.id.tvTitle, Color.parseColor(statusColor))
             }
 
@@ -167,11 +169,12 @@ class CarProgressNotificationHelper(private val context: Context) {
             .setContentText(statusText)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
-            .setStyle(null)
+            .setAutoCancel(false)
             .setOnlyAlertOnce(true)
             .setCustomContentView(collapsedView)
             .setCustomBigContentView(expandedView)
+             builder.setOngoing(true) // Prevents user from swiping it away
+
         builder.setProgress(totalStages, status, false)
 
         // Notify the system

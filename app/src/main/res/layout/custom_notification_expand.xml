@@ -64,6 +64,7 @@
         android:layout_marginBottom="4dp"
         android:text="Mark as complete"
         android:textColor="@color/teal_200"
+        android:textStyle="bold"
         android:visibility="gone" />
 
     <TextView
@@ -74,7 +75,8 @@
         android:layout_alignParentLeft="true"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="4dp"
-        android:text="Cancel"
+        android:text="Stop Tracking"
         android:textColor="@color/teal_200"
+        android:textStyle="bold"
         android:visibility="visible" />
 </RelativeLayout>
