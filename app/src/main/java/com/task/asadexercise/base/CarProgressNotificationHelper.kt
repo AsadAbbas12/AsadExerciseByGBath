@@ -12,8 +12,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.RectF
+import android.graphics.Shader
 import android.os.Build
 import android.view.View
 import android.widget.RemoteViews
@@ -22,6 +24,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import com.task.asadexercise.R
 import com.task.asadexercise.ui.theme.MainActivity
 
@@ -187,8 +190,7 @@ class CarProgressNotificationHelper(private val context: Context) {
     }
 
     private fun createProgressBarWithCar(currentProgress: Int, totalProgress: Int): Bitmap {
-        val progressPercentage =
-            (currentProgress.toFloat() / totalProgress.toFloat()).coerceIn(0f, 1f)
+        val progressPercentage = (currentProgress.toFloat() / totalProgress.toFloat()).coerceIn(0f, 1f)
         val totalWidth = PROGRESS_BAR_WIDTH + CAR_ICON_SIZE
         val bitmap = Bitmap.createBitmap(
             totalWidth,
@@ -201,19 +203,26 @@ class CarProgressNotificationHelper(private val context: Context) {
             style = Paint.Style.FILL
         }
 
-        // Determine progress color based on current progress
-        val progressColor = when {
-            currentProgress == 0 -> Color.parseColor("#FFA500") // Orange for Preparing
-            currentProgress < totalProgress / 3 -> Color.parseColor("#FFA500") // Orange for On the Way
-            currentProgress < totalProgress * 2 / 3 -> Color.parseColor("#FFC107") // Green for Approaching
-            currentProgress < totalProgress -> Color.parseColor("#8BC34A") // Green for Arriving Soon
-            else -> Color.parseColor("#4CAF50") // Green for Arrived
+        // Define all segment colors
+        val segmentColors = listOf(
+            Color.parseColor("#FFA500"),  // Preparing/On the Way (Orange)
+            Color.parseColor("#FFC107"),  // Approaching (Amber)
+            Color.parseColor("#8BC34A"),  // Arriving Soon (Light Green)
+            Color.parseColor("#4CAF50")   // Arrived (Green)
+        )
+
+        // Determine current segment
+        val currentSegment = when {
+            currentProgress == 0 -> 0
+            currentProgress < totalProgress / 3 -> 0
+            currentProgress < totalProgress * 2 / 3 -> 1
+            currentProgress < totalProgress -> 2
+            else -> 3
         }
 
         // Draw track background
         paint.color = Color.LTGRAY
         val reducedHeight = PROGRESS_BAR_HEIGHT / 7f
-
         canvas.drawRoundRect(
             RectF(0f, 100 / 2f, PROGRESS_BAR_WIDTH.toFloat(), 100 / 2f + reducedHeight),
             reducedHeight / 2f,
@@ -221,9 +230,31 @@ class CarProgressNotificationHelper(private val context: Context) {
             paint
         )
 
-        // Draw progress with appropriate color
-        paint.color = progressColor
         val progressWidth = PROGRESS_BAR_WIDTH * progressPercentage
+
+        // Handle gradient creation differently based on segment
+        if (currentSegment == 0) {
+            // For first segment, just use solid color
+            paint.color = segmentColors[0]
+            paint.shader = null
+        } else {
+            // For other segments, create gradient with all colors up to current segment
+            val gradientColors = segmentColors.take(currentSegment + 1).toIntArray()
+            val gradientPositions = FloatArray(gradientColors.size).apply {
+                for (i in indices) {
+                    this[i] = i / (gradientColors.size - 1).toFloat()
+                }
+            }
+
+            val gradient = LinearGradient(
+                0f, 0f,
+                progressWidth, 0f,
+                gradientColors,
+                gradientPositions,
+                Shader.TileMode.CLAMP
+            )
+            paint.shader = gradient
+        }
 
         canvas.drawRoundRect(
             RectF(0f, 100 / 2f, progressWidth, (100 / 2f + reducedHeight)),
@@ -231,6 +262,9 @@ class CarProgressNotificationHelper(private val context: Context) {
             reducedHeight / 2f,
             paint
         )
+
+        // Reset shader for other elements
+        paint.shader = null
 
         // Draw car at current progress position
         val carIcon = BitmapFactory.decodeResource(context.resources, R.drawable.cea)
@@ -247,8 +281,6 @@ class CarProgressNotificationHelper(private val context: Context) {
 
         return bitmap
     }
-
-
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Progress Tracking"
