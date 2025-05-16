@@ -50,11 +50,27 @@ class MainActivity : NavigationGraph<Destinations>() {
 
         lifecycleScope.launch {
             // Generate a stable notification ID based on tag or random
-            val notificationId = "ts"?.hashCode()?.absoluteValue ?: Random.nextInt().absoluteValue
+            val notificationId = "ts".hashCode().absoluteValue ?: Random.nextInt().absoluteValue
 
             for (progress in 1..10) {
-                notificationHelper.showProgressNotification(progress, notificationId  = notificationId)
+                notificationHelper.showProgressNotification(
+                    progress,
+                    notificationId = notificationId
+                )
                 delay(2000) // 1 second delay
+            }
+        }
+
+        lifecycleScope.launch {
+            // Generate a stable notification ID based on tag or random
+            val notificationId = "tss".hashCode().absoluteValue ?: Random.nextInt().absoluteValue
+
+            for (progress in 1..10) {
+                notificationHelper.showProgressNotification(
+                    progress,
+                    notificationId = notificationId
+                )
+                delay(5000) // 1 second delay
             }
         }
     }
@@ -64,8 +80,9 @@ class MainActivity : NavigationGraph<Destinations>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-      checkNotificationPermission()
+        checkNotificationPermission()
     }
+
     override val sharedViewModel: SharedVM by viewModels() // Using SharedViewModel to share data between screens and maintain a consistent state across the app. This allows the ViewModel to persist data and handle communication screens , keep in mind this is only communication purppose every screen should have different viewmodel
     override val startDestination = Destinations.MAIN
 
@@ -93,9 +110,11 @@ class MainActivity : NavigationGraph<Destinations>() {
                 ) == PackageManager.PERMISSION_GRANTED -> {
                     startNotificationSequence()
                 }
+
                 shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
                     showPermissionExplanationDialog()
                 }
+
                 else -> {
                     requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }

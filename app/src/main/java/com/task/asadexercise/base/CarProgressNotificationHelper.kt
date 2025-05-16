@@ -75,8 +75,8 @@ class CarProgressNotificationHelper(private val context: Context) {
         val (statusText, statusColor) = when {
             status == 0 -> Pair("Preparing", "#FFA500")
             status < totalStages / 3 -> Pair("On the Way", "#FFA500")
-            status < totalStages * 2 / 3 -> Pair("Approaching", "#4CAF50")
-            status < totalStages -> Pair("Arriving Soon", "#4CAF50")
+            status < totalStages * 2 / 3 -> Pair("Approaching", "#FFC107")
+            status < totalStages -> Pair("Arriving Soon", "#8BC34A")
             else -> Pair("Team Arrived", "#4CAF50")
         }
 
@@ -205,8 +205,8 @@ class CarProgressNotificationHelper(private val context: Context) {
         val progressColor = when {
             currentProgress == 0 -> Color.parseColor("#FFA500") // Orange for Preparing
             currentProgress < totalProgress / 3 -> Color.parseColor("#FFA500") // Orange for On the Way
-            currentProgress < totalProgress * 2 / 3 -> Color.parseColor("#4CAF50") // Green for Approaching
-            currentProgress < totalProgress -> Color.parseColor("#4CAF50") // Green for Arriving Soon
+            currentProgress < totalProgress * 2 / 3 -> Color.parseColor("#FFC107") // Green for Approaching
+            currentProgress < totalProgress -> Color.parseColor("#8BC34A") // Green for Arriving Soon
             else -> Color.parseColor("#4CAF50") // Green for Arrived
         }
 
