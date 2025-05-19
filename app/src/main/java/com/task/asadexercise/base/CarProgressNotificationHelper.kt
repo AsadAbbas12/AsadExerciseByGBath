@@ -31,11 +31,11 @@ class CarProgressNotificationHelper(private val context: Context) {
 
     companion object {
         const val CHANNEL_ID = "CAR_PROGRESS_CHANNEL"
-        private const val MAX_ACTIVE_NOTIFICATIONS = 2
+        private const val MAX_ACTIVE_NOTIFICATIONS = 4
         private val activeNotificationIds = mutableListOf<Int>()
-        private const val PROGRESS_BAR_WIDTH = 440
+        private var PROGRESS_BAR_WIDTH = 440
         private const val PROGRESS_BAR_HEIGHT = 30
-        private const val CAR_ICON_SIZE = 30
+        private const val CAR_ICON_SIZE = 40
         const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1001
     }
 
@@ -173,7 +173,7 @@ class CarProgressNotificationHelper(private val context: Context) {
             .setOnlyAlertOnce(true)
             .setCustomContentView(collapsedView)
             .setCustomBigContentView(expandedView)
-             builder.setOngoing(true) // Prevents user from swiping it away
+//             builder.setOngoing(true) // Prevents user from swiping it away
 
         builder.setProgress(totalStages, status, false)
 
@@ -193,8 +193,12 @@ class CarProgressNotificationHelper(private val context: Context) {
     }
 
     private fun createProgressBarWithCar(currentProgress: Int, totalProgress: Int): Bitmap {
+
         val progressPercentage =
             (currentProgress.toFloat() / totalProgress.toFloat()).coerceIn(0f, 1f)
+
+        PROGRESS_BAR_WIDTH = context.resources.displayMetrics.densityDpi
+
         val totalWidth = PROGRESS_BAR_WIDTH + CAR_ICON_SIZE
         val bitmap = Bitmap.createBitmap(
             totalWidth,
