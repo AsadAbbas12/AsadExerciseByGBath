@@ -20,6 +20,11 @@ hiltNavigationCompose = "1.2.0"
 ksp = "2.0.0-1.0.21"    # KSP version
 runtimeLivedata = "1.7.8"
 ui = "1.7.8"
+appcompat = "1.7.0"
+material = "1.12.0"
+playServicesCastFramework = "22.1.0"
+activity = "1.10.1"
+constraintlayout = "2.2.1"
 
 [libraries]
 androidx-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "foundation" }
@@ -50,6 +55,11 @@ hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt"
 hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+play-services-cast-framework = { group = "com.google.android.gms", name = "play-services-cast-framework", version.ref = "playServicesCastFramework" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

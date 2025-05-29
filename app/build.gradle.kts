@@ -39,6 +39,8 @@ android {
     buildFeatures {
         compose = true
     }
+
+
 }
 
 dependencies {
@@ -54,6 +56,11 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.hilt.android)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.play.services.cast.framework)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
     kapt(libs.hilt.compiler) // ✅ Inject Hilt compiler
     implementation(libs.hilt.navigation.compose) // Hilt integration with Jetpack Compose
     androidTestImplementation(libs.androidx.junit)
@@ -70,6 +77,13 @@ dependencies {
    implementation (libs.androidx.media)
    implementation (libs.exoplayer) // using deprecated api because exo three has some bugs yet.
     implementation(libs.coil.compose) // Use the latest version
+    implementation ("androidx.browser:browser:1.8.0")
+    implementation ("androidx.appcompat:appcompat:1.6.1")
+    implementation ("androidx.core:core:1.12.0")
+    implementation ("androidx.media:media:1.6.0") // For MediaSessionCompat
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+
 
 //    implementation(libs.androidx.media3.exoplayer)
 //    implementation (libs.androidx.media3.ui)
