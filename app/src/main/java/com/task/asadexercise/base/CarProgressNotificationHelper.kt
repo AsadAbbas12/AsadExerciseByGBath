@@ -39,7 +39,7 @@ class CarProgressNotificationHelper(private val context: Context) {
         const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1001
     }
 
-    fun showProgressNotification(status: Int, totalStages: Int = 10, notificationId: Int) {
+    fun showProgressNotification(status: Int, totalStages: Int = 5, notificationId: Int) {
 
         // Check notification permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -76,22 +76,22 @@ class CarProgressNotificationHelper(private val context: Context) {
         // Determine status text and color based on refined progress steps
         val (statusText, statusColor) = when {
             status == 0 -> Pair("Preparing", "#FFA500")
-            status < totalStages * 1 / 5 -> Pair("On the Way", "#FFA500")
-            status < totalStages * 2 / 5 -> Pair("Approaching", "#FFC107")
-            status < totalStages * 3 / 5 -> Pair("Arriving Soon", "#8BC34A")
-            status < totalStages -> Pair("Team Arrived", "#4CAF50")
+            status < 1 -> Pair("On the Way", "#FFA500")         // < 1 (0)
+            status < 2 -> Pair("Approaching", "#FFC107")        // 1
+            status < 3 -> Pair("Arriving Soon", "#8BC34A")      // 2
+            status < 4 -> Pair("Team Arrived", "#4CAF50")       // 3
+            status < 5 -> Pair("Done", "#4CAF50")               // 4
             else -> Pair("Done", "#4CAF50")
         }
 
-
-        // Estimated time remaining with 3-minute gaps
+// Estimated time remaining with 3-minute gaps (based on new 5-step model)
         val estimatedMinutesLeft = when {
-            status == 0 -> 30
-            status < totalStages / 5 -> 27
-            status < totalStages * 2 / 5 -> 24
-            status < totalStages * 3 / 5 -> 21
-            status < totalStages * 4 / 5 -> 18
-            status < totalStages -> 15
+            status == 0 -> 15
+            status < 1 -> 12
+            status < 2 -> 9
+            status < 3 -> 6
+            status < 4 -> 3
+            status < 5 -> 0
             else -> 0
         }
 
@@ -129,7 +129,7 @@ class CarProgressNotificationHelper(private val context: Context) {
                 setTextViewText(R.id.tvEstimate, etaText)
 
                 if (status >= totalStages) {
-                    setViewVisibility(R.id.btnComplete, View.VISIBLE)
+                    setViewVisibility(R.id.btnComplete, View.GONE)
                     setViewVisibility(R.id.btnCancel, View.GONE)
 
                     val completeIntent =
@@ -146,7 +146,7 @@ class CarProgressNotificationHelper(private val context: Context) {
                     setOnClickPendingIntent(R.id.btnComplete, completePendingIntent)
                 } else {
                     setViewVisibility(R.id.btnComplete, View.GONE)
-                    setViewVisibility(R.id.btnCancel, View.VISIBLE)
+                    setViewVisibility(R.id.btnCancel, View.GONE)
                     val completeIntent =
                         Intent(context, NotificationActionReceiver::class.java).apply {
                             action = "ACTION_COMPLETE"
@@ -164,8 +164,9 @@ class CarProgressNotificationHelper(private val context: Context) {
             }
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_dewa_pie_chart)
+            .setSmallIcon(R.drawable.ic_dewa_brand)
             .setContentTitle("Smart Response")
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setContentText(statusText)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
@@ -175,7 +176,7 @@ class CarProgressNotificationHelper(private val context: Context) {
             .setCustomBigContentView(expandedView)
 //             builder.setOngoing(true) // Prevents user from swiping it away
 
-        builder.setProgress(totalStages, status, false)
+        builder.setProgress(0, 0, false)
 
         // Notify the system
         NotificationManagerCompat.from(context).notify(notificationId, builder.build())
@@ -213,10 +214,10 @@ class CarProgressNotificationHelper(private val context: Context) {
 
         // Define all segment colors
         val segmentColors = listOf(
-            Color.parseColor("#FF8C00"),  // Brighter Orange
-            Color.parseColor("#FFD700"),  // Brighter Amber (Gold)
-            Color.parseColor("#AEEA00"),  // Brighter Light Green (Lime)
-            Color.parseColor("#00C853")   // Brighter Green (Emerald)
+            Color.parseColor("#007560"),  // Brighter Orange
+            Color.parseColor("#007560"),  // Brighter Amber (Gold)
+            Color.parseColor("#007560"),  // Brighter Light Green (Lime)
+            Color.parseColor("#007560")   // Brighter Green (Emerald)
         )
 
 

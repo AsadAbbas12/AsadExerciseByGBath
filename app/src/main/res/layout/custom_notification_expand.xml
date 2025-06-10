@@ -1,32 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/layout"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Smart Response"
-        android:textColor="#090909" />
+        android:padding="0dp">
 
-    <TextView
-        android:id="@+id/tvDewa"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tvTitle"
-        android:layout_marginTop="3dp"
-        android:text="No-Electricity - No Power"
-        android:textColor="#141313"
-        android:textSize="13sp"
-        android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Smart Response"
+            android:textColor="#090909"
+            android:visibility="gone"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/tvDewa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvTitle"
+            android:layout_alignParentStart="true"
+            android:text="No-Electricity - No Power"
+            android:textColor="#141313"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/imgRight"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_dewa_brand" />
+    </RelativeLayout>
+
 
     <TextView
         android:id="@+id/tvStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tvDewa"
+        android:layout_below="@id/layout"
         android:layout_marginTop="33dp"
         android:layout_marginBottom="-20dp"
         android:text="Team Arrived"
@@ -78,5 +96,5 @@
         android:text="Stop Tracking"
         android:textColor="@color/teal_200"
         android:textStyle="bold"
-        android:visibility="visible" />
+        android:visibility="gone" />
 </RelativeLayout>

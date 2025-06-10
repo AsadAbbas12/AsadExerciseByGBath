@@ -19,47 +19,44 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AsadExercise"
         tools:targetApi="31">
-<!--        <activity-->
-<!--            android:name=".CustomWebviewActivity"-->
-<!--            android:exported="false" />-->
+        <!--        <activity-->
+        <!--            android:name=".CustomViewPager"-->
+        <!--            android:exported="false" />-->
         <!-- <activity -->
-        <!-- android:name=".ui.theme.MainActivity" -->
+        <!-- android:name=".CustomWebviewActivity" -->
+        <!-- android:exported="false" /> -->
+        <activity
+            android:name=".ui.theme.MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.AsadExercise">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!-- <activity -->
+        <!-- android:name=".WebViewActivity" -->
         <!-- android:exported="true" -->
         <!-- android:label="@string/app_name" -->
-        <!-- android:theme="@style/Theme.AsadExercise"> -->
+        <!-- android:theme="@style/Theme.AppCompat"> -->
         <!-- <intent-filter> -->
         <!-- <action android:name="android.intent.action.MAIN" /> -->
         <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
         <!-- </intent-filter> -->
         <!-- </activity> -->
+        <!-- <service android:name=".AudioDetectionService" android:exported="false" /> -->
+        <!--        <activity-->
+        <!--            android:name=".DragDropListActivity"-->
+        <!--            android:exported="true"-->
+        <!--            android:label="@string/app_name"-->
+        <!--            android:theme="@style/Theme.AppCompat">-->
+        <!--            <intent-filter>-->
+        <!--                <action android:name="android.intent.action.MAIN" />-->
 
-<!--        <activity-->
-<!--            android:name=".WebViewActivity"-->
-<!--            android:exported="true"-->
-<!--            android:label="@string/app_name"-->
-<!--            android:theme="@style/Theme.AppCompat">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
-
-<!--        <service android:name=".AudioDetectionService" android:exported="false" />-->
-
-
-                <activity
-                    android:name=".ui.theme.DragDropListActivity"
-                    android:exported="true"
-                    android:label="@string/app_name"
-                    android:theme="@style/Theme.AppCompat">
-                    <intent-filter>
-                        <action android:name="android.intent.action.MAIN" />
-
-                        <category android:name="android.intent.category.LAUNCHER" />
-                    </intent-filter>
-                </activity>
-
+        <!--                <category android:name="android.intent.category.LAUNCHER" />-->
+        <!--            </intent-filter>-->
+        <!--        </activity>-->
     </application>
 
 </manifest>
