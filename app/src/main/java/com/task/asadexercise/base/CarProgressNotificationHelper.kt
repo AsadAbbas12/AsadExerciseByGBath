@@ -111,7 +111,7 @@ class CarProgressNotificationHelper(private val context: Context) {
         )
 
         // Create progress bar with moving car
-        val progressBitmap = createProgressBarWithCar(status, totalStages)
+        val progressBitmap = createProgressBarWithDots(status, totalStages)
         val collapsedView =
             RemoteViews(context.packageName, R.layout.custom_notification_collapse).apply {
                 setImageViewBitmap(R.id.imageViewProgress, progressBitmap)
@@ -193,6 +193,77 @@ class CarProgressNotificationHelper(private val context: Context) {
         activeNotificationIds.clear()
     }
 
+    private fun createProgressBarWithDots(currentProgress: Int, totalProgress: Int): Bitmap {
+        val progressPercentage = (currentProgress.toFloat() / totalProgress.toFloat()).coerceIn(0f, 1f)
+
+        PROGRESS_BAR_WIDTH = context.resources.displayMetrics.densityDpi
+        val totalWidth = PROGRESS_BAR_WIDTH
+        val dotRadius = 10f
+        val dotCount = 4
+        val padding = dotRadius * 2
+        val usableWidth = totalWidth - 2 * padding
+        val dotSpacing = usableWidth / (dotCount - 1)
+
+        val bitmap = Bitmap.createBitmap(
+            totalWidth,
+            PROGRESS_BAR_HEIGHT + 100,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+        val activeColor = Color.parseColor("#007560")
+        val inactiveColor = Color.LTGRAY
+        val centerY = bitmap.height / 2f
+        val lineThickness = PROGRESS_BAR_HEIGHT / 7f
+
+        // Determine how many full dots are filled
+        val filledDots = (progressPercentage * (dotCount - 1)).toInt()
+
+        // Draw background line
+        paint.color = inactiveColor
+        canvas.drawRoundRect(
+            RectF(
+                padding,
+                centerY - lineThickness / 2f,
+                totalWidth - padding,
+                centerY + lineThickness / 2f
+            ),
+            lineThickness / 2f,
+            lineThickness / 2f,
+            paint
+        )
+
+        // Draw filled segments between dots
+        paint.color = activeColor
+        for (i in 0 until filledDots) {
+            val startX = padding + i * dotSpacing
+            val endX = padding + (i + 1) * dotSpacing
+            canvas.drawRoundRect(
+                RectF(
+                    startX,
+                    centerY - lineThickness / 2f,
+                    endX,
+                    centerY + lineThickness / 2f
+                ),
+                lineThickness / 2f,
+                lineThickness / 2f,
+                paint
+            )
+        }
+
+        // Draw dots
+        for (i in 0 until dotCount) {
+            val x = padding + i * dotSpacing
+            paint.color = if (i <= filledDots) activeColor else inactiveColor
+            canvas.drawCircle(x, centerY, dotRadius, paint)
+        }
+
+        return bitmap
+    }
+
+    /*
+// car live activity
     private fun createProgressBarWithCar(currentProgress: Int, totalProgress: Int): Bitmap {
 
         val progressPercentage =
@@ -291,7 +362,7 @@ class CarProgressNotificationHelper(private val context: Context) {
 
         return bitmap
     }
-
+*/
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Progress Tracking"
